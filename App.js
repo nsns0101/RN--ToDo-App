@@ -26,7 +26,8 @@ export default class App extends React.Component {
             autoCorrect={false}   //글 자동 수정
           />
 
-          <ScrollView>
+          {/* 스크롤 뷰 (ToDo파일에 style전달) */}
+          <ScrollView contentContainerStyle={styles.toDos}>
             <ToDo />
           </ScrollView>
         </View>
@@ -80,5 +81,8 @@ const styles = StyleSheet.create({
     padding: 20,
     borderBottomColor: "#bbb",
     borderBottomWidth: 1,
+  },
+  toDos: {
+    alignItems: "center"
   }
 });
