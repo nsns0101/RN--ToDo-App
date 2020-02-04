@@ -11,6 +11,8 @@ export default class App extends React.Component {
   };
   render() {
     const { newToDo } = this.state
+
+
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
@@ -28,7 +30,7 @@ export default class App extends React.Component {
 
           {/* 스크롤 뷰 (ToDo파일에 style전달) */}
           <ScrollView contentContainerStyle={styles.toDos}>
-            <ToDo />
+            <ToDo text={"Hello I'm To Do"} />
           </ScrollView>
         </View>
       </View>

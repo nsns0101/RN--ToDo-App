@@ -1,15 +1,17 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
 export default class ToDo extends React.Component {
     state = {
-        isEditing: false,           //수정중인지?
-        isCompleted: false,         //수정끝인지?
+        isEditing: false,           //수정중인지
+        isCompleted: false,         //수정끝인지
+        toDoValue: "",
     }
     render() {
-        const { isCompleted, isEditing } = this.state;
+        const { isCompleted, isEditing, toDoValue } = this.state;
+        const { text } = this.props;        //App.js에서 넘어온 값
         return (
             <View style={styles.container}>
 
@@ -25,10 +27,29 @@ export default class ToDo extends React.Component {
                     </TouchableOpacity>
 
                     {/* 클릭 텍스트 */}
-                    <TouchableOpacity onPress={this._toggleComplete}>
-                        <Text style={[styles.text, isCompleted ? styles.completedText : styles.uncompletedText]}>
-                            Hello I'm a To Do
-                        </Text>
+                    <TouchableOpacity>
+                        {/* 편집상태일 때는 텍스트를 다시 쓸 수 있게*/}
+                        {isEditing ?
+                            //편집상태일 때
+                            (<TextInput
+                                style={[
+                                    styles.input,
+                                    styles.text,
+                                    isCompleted ? styles.completedText : styles.uncompletedText
+                                ]}
+                                value={toDoValue}
+                                multiline={true}
+                                onChangeText={this._controllInput}  //텍스트 입력시 바뀔 수 있도록
+                                returnKeyType={"done"}
+                                onBlur={this._finishEditing} //blur로 다른 곳 클릭하면 편집 끝날 수 있도록
+                            />
+                            )
+                            :
+                            //편집 상태가 아닐 때
+                            (<Text style={[styles.text, isCompleted ? styles.completedText : styles.uncompletedText]}>
+                                {text}
+                            </Text>
+                            )}
                     </TouchableOpacity>
                 </View>
                 {isEditing ? (
@@ -57,8 +78,6 @@ export default class ToDo extends React.Component {
                         </View>
                     )
                 }
-
-
             </View>
         );
     }
@@ -71,16 +90,24 @@ export default class ToDo extends React.Component {
             };
         });
     };
-
+    //편집 시작
     _startEditing = () => {
+        const { text } = this.props;
         this.setState({
-            isEditing: true
-        })
-    }
-
+            isEditing: true,
+            toDoValue: text
+        });
+    };
+    //편집 끝
     _finishEditing = () => {
         this.setState({
             isEditing: false
+        });
+    };
+    //텍스트 입력할 수 있도록
+    _controllInput = (text) => {
+        this.setState({
+            toDoValue: text
         })
     }
 }
@@ -138,6 +165,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
     },
     actionText: {
+
+    },
+    input: {
+        marginVertical: 10,
+        width: width / 2,
 
     }
 });
