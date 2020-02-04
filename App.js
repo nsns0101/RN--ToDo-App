@@ -1,17 +1,33 @@
 import React from 'react';
 import { StyleSheet, Text, View, StatusBar, TextInput, Dimensions, Platform, ScrollView } from 'react-native';
 import { render } from 'react-dom';
-import ToDo from "./ToDo"
+import ToDo from "./ToDo";
+import { AppLoading } from "expo";  //앱의 로딩 상태를 확인
+import uuidv1 from "uuid/v1";     //uuid version1 (소프트웨어 난수)
+
 
 const { width, height } = Dimensions.get("window"); //현재 휴대폰의 가로 세로를 가져옴
 
 export default class App extends React.Component {
+
   state = {
     newToDo: "",
+    loadedToDos: false,   //앱을 열 경우 전에 쓴 ToDo List들이 보이게 로드
+    toDos: {}    //ToDoList
   };
-  render() {
-    const { newToDo } = this.state
 
+  componentDidMount = () => {
+    this._loadToDos();
+  }
+
+  render() {
+    const { newToDo, loadedToDos, toDos } = this.state
+    // console.log(toDos); //모든 ToDo
+
+    //앱 로딩이 안되어 있으면
+    if (!loadedToDos) {
+      return <AppLoading />;
+    }
 
     return (
       <View style={styles.container}>
@@ -26,22 +42,75 @@ export default class App extends React.Component {
             onChangeText={this._crontollNewToDo}
             returnKeyType={"done"}
             autoCorrect={false}   //글 자동 수정
+            onSubmitEditing={this._addToDo}
           />
 
           {/* 스크롤 뷰 (ToDo파일에 style전달) */}
           <ScrollView contentContainerStyle={styles.toDos}>
-            <ToDo text={"Hello I'm To Do"} />
+            {/* toDos객체(ToDoList) 개수만큼 반복(key와 값들) */}
+            {Object.values(toDos).map(toDo => <ToDo key={toDo.id} {...toDo} deleteToDo={this._deleteToDo} />)}
           </ScrollView>
         </View>
       </View>
     );
   }
 
-  _crontollNewToDo = text => {
+  _crontollNewToDo = (text) => {
     this.setState({
       newToDo: text
     });
   };
+
+  // 로딩상태를 전달
+  _loadToDos = () => {
+    this.setState({
+      loadedToDos: true
+    });
+  };
+
+  //ToDo리스트 추가
+  _addToDo = () => {
+    const { newToDo } = this.state;   //현재 입력창에 적어진 글
+    //입력창에 무엇인가 써있다면
+    if (newToDo !== "") {
+      this.setState(prevState => {
+        const ID = uuidv1();  //난수의 id를 생성
+        //추가할 ToDo
+        const newToDoObject = {
+          [ID]: {
+            id: ID,
+            isCompleted: false,
+            text: newToDo,
+            cretedAt: Date.now()     //생성 시간
+          }
+        };
+        //ToDoList 새로고침
+        const newState = {
+          ...prevState,
+          newToDo: "",            //입력창을 비워줌
+          toDos: {
+            ...prevState.toDos,   //원래 가지고 있는 ToDo들
+            ...newToDoObject,     //추가하는  왜 ...을 쓰지? 하나지 않나?
+          }
+        }
+        return { ...newState };
+      });
+    };
+  }
+
+  _deleteToDo = (id) => {
+    this.setState(prevState => {
+      const toDos = prevState.toDos;
+      delete toDos[id];
+      const newState = {
+        ...prevState,
+        ...toDos,
+      };
+      return { ...newState };
+    });
+  }
+
+
 }
 
 const styles = StyleSheet.create({

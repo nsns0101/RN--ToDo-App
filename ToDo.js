@@ -1,17 +1,36 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, TextInput } from "react-native";
+import PropTypes from "prop-types"
+
+
 
 const { width, height } = Dimensions.get("window");
 
 export default class ToDo extends React.Component {
+    //생성자 (초기값)
+    constructor(props) {
+        super(props);
+        this.state = {
+            isEditing: false,
+            toDoValue: props.text
+        }
+        console.log(props);
+    }
+    static propTypes = {
+        text: PropTypes.string.isRequired,           //받은 데이터 중 text가 문자형식인지를 판단
+        isCompleted: PropTypes.bool.isRequired,      //받은 데이터 중 isCompleted가 bool형식인지를 판단
+        deleteToDo: PropTypes.func.isRequired,           //받은 데이터 중 deleteToDo가 함수인지를 판단
+        id: PropTypes.string.isRequired             //받은 데이터 중 id가 문자형식인지를 판단
+    }
+
     state = {
         isEditing: false,           //수정중인지
-        isCompleted: false,         //수정끝인지
         toDoValue: "",
     }
     render() {
         const { isCompleted, isEditing, toDoValue } = this.state;
-        const { text } = this.props;        //App.js에서 넘어온 값
+        const { text, id, deleteToDo } = this.props;        //App.js에서 넘어온 값
+        // console.log(this.props);        //받은 데이터 (안드로이드로 따지면 인텐트로 넘겨준 값?)
         return (
             <View style={styles.container}>
 
@@ -37,8 +56,8 @@ export default class ToDo extends React.Component {
                                     styles.text,
                                     isCompleted ? styles.completedText : styles.uncompletedText
                                 ]}
-                                value={toDoValue}
-                                multiline={true}
+                                value={toDoValue}           //편집전 텍스트
+                                multiline={true}            //여러줄 가능하게
                                 onChangeText={this._controllInput}  //텍스트 입력시 바뀔 수 있도록
                                 returnKeyType={"done"}
                                 onBlur={this._finishEditing} //blur로 다른 곳 클릭하면 편집 끝날 수 있도록
@@ -46,11 +65,17 @@ export default class ToDo extends React.Component {
                             )
                             :
                             //편집 상태가 아닐 때
-                            (<Text style={[styles.text, isCompleted ? styles.completedText : styles.uncompletedText]}>
+                            (<Text
+                                style={[
+                                    styles.text,
+                                    isCompleted ? styles.completedText : styles.uncompletedText
+                                ]}
+                            >
                                 {text}
                             </Text>
                             )}
                     </TouchableOpacity>
+
                 </View>
                 {isEditing ? (
                     <View style={styles.actions}>
@@ -70,7 +95,7 @@ export default class ToDo extends React.Component {
                                 </View>
                             </TouchableOpacity>
                             {/* 삭제 버튼*/}
-                            <TouchableOpacity>
+                            <TouchableOpacity onPressOut={function () { deleteToDo(id) }}>  {/* function안에 deleteToDo함수를 넣어야 함 */}
                                 <View style={styles.actionContainer}>
                                     <Text style={styles.actionText}>❌</Text>
                                 </View>
@@ -95,7 +120,7 @@ export default class ToDo extends React.Component {
         const { text } = this.props;
         this.setState({
             isEditing: true,
-            toDoValue: text
+            // toDoValue: text
         });
     };
     //편집 끝
@@ -154,7 +179,7 @@ const styles = StyleSheet.create({
     column: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
         width: width / 2,
     },
     actions: {
@@ -168,8 +193,9 @@ const styles = StyleSheet.create({
 
     },
     input: {
-        marginVertical: 10,
+        marginVertical: 20,
         width: width / 2,
+        paddingBottom: 5,
 
     }
 });
