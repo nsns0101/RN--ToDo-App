@@ -48,7 +48,15 @@ export default class App extends React.Component {
           {/* 스크롤 뷰 (ToDo파일에 style전달) */}
           <ScrollView contentContainerStyle={styles.toDos}>
             {/* toDos객체(ToDoList) 개수만큼 반복(key와 값들) */}
-            {Object.values(toDos).map(toDo => <ToDo key={toDo.id} {...toDo} deleteToDo={this._deleteToDo} />)}
+            {Object.values(toDos).map(toDo => (
+              <ToDo
+                key={toDo.id}
+                deleteToDo={this._deleteToDo}             //삭제 값
+                completeToDo={this._completeToDo}
+                uncompleteToDo={this._uncompleteToDo}
+                {...toDo}
+              />
+            ))}
           </ScrollView>
         </View>
       </View>
@@ -68,18 +76,20 @@ export default class App extends React.Component {
     });
   };
 
-  //ToDo리스트 추가
+  //ToDoList 추가
   _addToDo = () => {
     const { newToDo } = this.state;   //현재 입력창에 적어진 글
     //입력창에 무엇인가 써있다면
     if (newToDo !== "") {
       this.setState(prevState => {
+        // console.log(prevState);      //현재 State의 값
         const ID = uuidv1();  //난수의 id를 생성
         //추가할 ToDo
         const newToDoObject = {
           [ID]: {
             id: ID,
             isCompleted: false,
+
             text: newToDo,
             cretedAt: Date.now()     //생성 시간
           }
@@ -96,8 +106,9 @@ export default class App extends React.Component {
         return { ...newState };
       });
     };
-  }
+  };
 
+  //ToDoList 삭제
   _deleteToDo = (id) => {
     this.setState(prevState => {
       const toDos = prevState.toDos;
@@ -108,8 +119,48 @@ export default class App extends React.Component {
       };
       return { ...newState };
     });
-  }
+  };
 
+  //라디오 버튼 누르기 전
+  _uncompleteToDo = (id) => {
+    this.setState(prevState => {
+      // console.log(prevState);
+      const newState = {
+        ...prevState,   //현재 State의 값
+        //newState.toDos
+        toDos: {
+          ...prevState.toDos, //현재 State.toDos의 값
+          //newState.toDos[id]
+          [id]: {
+            ...prevState.toDos[id], //현재 State.toDos의 id값
+            isCompleted: false
+          }
+        }
+      }
+      // console.log(...newState);
+      return { ...newState };
+    })
+  };
+
+  //라디오버튼 누른 후
+  _completeToDo = (id) => {
+    this.setState(prevState => {
+      // console.log(prevState);
+      const newState = {
+        ...prevState,   //현재 State의 값
+        //newState.toDos
+        toDos: {
+          ...prevState.toDos, //현재 State.toDos의 값
+          //newState.toDos[id]
+          [id]: {
+            ...prevState.toDos[id], //현재 State.toDos의 id값
+            isCompleted: true       //라디오버튼 누르기 완료
+          }
+        }
+      }
+      return { ...newState };
+    })
+  }
 
 }
 

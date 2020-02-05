@@ -14,13 +14,15 @@ export default class ToDo extends React.Component {
             isEditing: false,
             toDoValue: props.text
         }
-        console.log(props);
+        // console.log(props);
     }
     static propTypes = {
         text: PropTypes.string.isRequired,           //받은 데이터 중 text가 문자형식인지를 판단
         isCompleted: PropTypes.bool.isRequired,      //받은 데이터 중 isCompleted가 bool형식인지를 판단
         deleteToDo: PropTypes.func.isRequired,           //받은 데이터 중 deleteToDo가 함수인지를 판단
-        id: PropTypes.string.isRequired             //받은 데이터 중 id가 문자형식인지를 판단
+        id: PropTypes.string.isRequired,             //받은 데이터 중 id가 문자형식인지를 판단
+        completeToDo: PropTypes.func.isRequired,
+        uncompleteToDo: PropTypes.func.isRequired,
     }
 
     state = {
@@ -28,8 +30,8 @@ export default class ToDo extends React.Component {
         toDoValue: "",
     }
     render() {
-        const { isCompleted, isEditing, toDoValue } = this.state;
-        const { text, id, deleteToDo } = this.props;        //App.js에서 넘어온 값
+        const { isEditing, toDoValue } = this.state;
+        const { text, id, deleteToDo, isCompleted } = this.props;        //App.js에서 넘어온 값
         // console.log(this.props);        //받은 데이터 (안드로이드로 따지면 인텐트로 넘겨준 값?)
         return (
             <View style={styles.container}>
@@ -73,7 +75,8 @@ export default class ToDo extends React.Component {
                             >
                                 {text}
                             </Text>
-                            )}
+                            )
+                        }
                     </TouchableOpacity>
 
                 </View>
@@ -94,8 +97,8 @@ export default class ToDo extends React.Component {
                                     <Text style={styles.actionText}>✏️</Text>
                                 </View>
                             </TouchableOpacity>
-                            {/* 삭제 버튼*/}
-                            <TouchableOpacity onPressOut={function () { deleteToDo(id) }}>  {/* function안에 deleteToDo함수를 넣어야 함 */}
+                            {/* 삭제 버튼*/}{/* function안에 deleteToDo함수를 넣어야 함 */}
+                            <TouchableOpacity onPressOut={() => deleteToDo(id)}>
                                 <View style={styles.actionContainer}>
                                     <Text style={styles.actionText}>❌</Text>
                                 </View>
@@ -107,13 +110,18 @@ export default class ToDo extends React.Component {
         );
     }
 
+    //라디오버튼에 대한 토글값
     _toggleComplete = () => {
-        //_toggleComplete함수가 불리면 state의 isCompleted를 바꿈
-        this.setState(prevState => {
-            return {
-                isCompleted: !prevState.isCompleted
-            };
-        });
+        // console.log(this.props);
+        const { isCompleted, completeToDo, uncompleteToDo, id } = this.props;
+        if (isCompleted) {
+            console.log("언컴플 함수실행");
+            uncompleteToDo(id);
+        }
+        else {
+            console.log("컴플 함수실행");
+            completeToDo(id);
+        }
     };
     //편집 시작
     _startEditing = () => {
