@@ -51,10 +51,11 @@ export default class App extends React.Component {
             {Object.values(toDos).map(toDo => (
               <ToDo
                 key={toDo.id}
-                deleteToDo={this._deleteToDo}             //삭제 값
-                completeToDo={this._completeToDo}
-                uncompleteToDo={this._uncompleteToDo}
                 {...toDo}
+                completeToDo={this._completeToDo}         //라디오버튼 클릭시 적용되는 함수
+                uncompleteToDo={this._uncompleteToDo}     //라디오버튼 한번 더 클릭시 적용되는 함수
+                deleteToDo={this._deleteToDo}             //텍스트 삭제시 적용되는 함수
+                updateToDo={this._updateToDo}             //텍스트 편집시 적용되는 함수
               />
             ))}
           </ScrollView>
@@ -89,7 +90,6 @@ export default class App extends React.Component {
           [ID]: {
             id: ID,
             isCompleted: false,
-
             text: newToDo,
             cretedAt: Date.now()     //생성 시간
           }
@@ -100,7 +100,7 @@ export default class App extends React.Component {
           newToDo: "",            //입력창을 비워줌
           toDos: {
             ...prevState.toDos,   //원래 가지고 있는 ToDo들
-            ...newToDoObject,     //추가하는  왜 ...을 쓰지? 하나지 않나?
+            ...newToDoObject,     //새로 추가하는 ToDo     왜 ...을 쓰지? 하나지 않나?
           }
         }
         return { ...newState };
@@ -126,7 +126,7 @@ export default class App extends React.Component {
     this.setState(prevState => {
       // console.log(prevState);
       const newState = {
-        ...prevState,   //현재 State의 값
+        ...prevState,     //현재 State의 값(로딩했는지 값은 비웠는지?)
         //newState.toDos
         toDos: {
           ...prevState.toDos, //현재 State.toDos의 값
@@ -147,7 +147,7 @@ export default class App extends React.Component {
     this.setState(prevState => {
       // console.log(prevState);
       const newState = {
-        ...prevState,   //현재 State의 값
+        ...prevState,       //현재 State의 값(로딩했는지 값은 비웠는지?)
         //newState.toDos
         toDos: {
           ...prevState.toDos, //현재 State.toDos의 값
@@ -161,6 +161,26 @@ export default class App extends React.Component {
       return { ...newState };
     })
   }
+
+
+  //텍스트 편집
+  _updateToDo = (id, text) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,   //현재 State의 값(로딩했는지 값은 비웠는지?)
+        toDos: {
+          ...prevState.toDos,
+          [id]: {
+            ...prevState.toDos[id],
+            text: text,
+          }
+        }
+      };
+      console.log(newState);
+      return { ...newState };
+    });
+  };
+
 
 }
 

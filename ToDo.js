@@ -17,12 +17,13 @@ export default class ToDo extends React.Component {
         // console.log(props);
     }
     static propTypes = {
-        text: PropTypes.string.isRequired,           //받은 데이터 중 text가 문자형식인지를 판단
-        isCompleted: PropTypes.bool.isRequired,      //받은 데이터 중 isCompleted가 bool형식인지를 판단
-        deleteToDo: PropTypes.func.isRequired,           //받은 데이터 중 deleteToDo가 함수인지를 판단
-        id: PropTypes.string.isRequired,             //받은 데이터 중 id가 문자형식인지를 판단
-        completeToDo: PropTypes.func.isRequired,
-        uncompleteToDo: PropTypes.func.isRequired,
+        text: PropTypes.string.isRequired,           //받은 데이터가 문자형식인지를 판단
+        isCompleted: PropTypes.bool.isRequired,      //받은 데이터가 bool형식인지를 판단
+        id: PropTypes.string.isRequired,             //받은 데이터가 문자형식인지를 판단
+        completeToDo: PropTypes.func.isRequired,     //받은 데이터가 함수인지를 판단
+        uncompleteToDo: PropTypes.func.isRequired,   //받은 데이터가 함수인지를 판단
+        deleteToDo: PropTypes.func.isRequired,       //받은 데이터가 함수인지를 판단
+        updateToDo: PropTypes.func.isRequired,       //받은 데이터가 함수인지를 판단     
     }
 
     state = {
@@ -133,6 +134,9 @@ export default class ToDo extends React.Component {
     };
     //편집 끝
     _finishEditing = () => {
+        const { toDoValue } = this.state;
+        const { id, updateToDo } = this.props;
+        updateToDo(id, toDoValue);
         this.setState({
             isEditing: false
         });
