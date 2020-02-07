@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar, TextInput, Dimensions, Platform, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, TextInput, Dimensions, Platform, ScrollView, AsyncStorage } from 'react-native';
 import { render } from 'react-dom';
 import ToDo from "./ToDo";
 import { AppLoading } from "expo";  //앱의 로딩 상태를 확인
@@ -26,6 +26,7 @@ export default class App extends React.Component {
 
     //앱 로딩이 안되어 있으면
     if (!loadedToDos) {
+      // console.log("");
       return <AppLoading />;
     }
 
@@ -48,14 +49,14 @@ export default class App extends React.Component {
           {/* 스크롤 뷰 (ToDo파일에 style전달) */}
           <ScrollView contentContainerStyle={styles.toDos}>
             {/* toDos객체(ToDoList) 개수만큼 반복(key와 값들) */}
-            {Object.values(toDos).map(toDo => (
+            {Object.values(toDos).reverse().map(toDo => ( //revserse는 반대로 정렬
               <ToDo
                 key={toDo.id}
-                {...toDo}
+                updateToDo={this._updateToDo}             //텍스트 편집시 적용되는 함수
+                deleteToDo={this._deleteToDo}             //텍스트 삭제시 적용되는 함수
                 completeToDo={this._completeToDo}         //라디오버튼 클릭시 적용되는 함수
                 uncompleteToDo={this._uncompleteToDo}     //라디오버튼 한번 더 클릭시 적용되는 함수
-                deleteToDo={this._deleteToDo}             //텍스트 삭제시 적용되는 함수
-                updateToDo={this._updateToDo}             //텍스트 편집시 적용되는 함수
+                {...toDo}
               />
             ))}
           </ScrollView>
@@ -71,10 +72,18 @@ export default class App extends React.Component {
   };
 
   // 로딩상태를 전달
-  _loadToDos = () => {
-    this.setState({
-      loadedToDos: true
-    });
+  _loadToDos = async () => {
+    try {
+      // console.log(AsyncStorage);
+      const toDos = await AsyncStorage.getItem("toDos");
+      // console.log(JSON.parse(toDos));
+      this.setState({
+        loadedToDos: true,
+        toDos: JSON.parse(toDos),
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //ToDoList 추가
@@ -103,6 +112,7 @@ export default class App extends React.Component {
             ...newToDoObject,     //새로 추가하는 ToDo     왜 ...을 쓰지? 하나지 않나?
           }
         }
+        this._saveToDos(newState.toDos);
         return { ...newState };
       });
     };
@@ -117,6 +127,7 @@ export default class App extends React.Component {
         ...prevState,
         ...toDos,
       };
+      this._saveToDos(newState.toDos);
       return { ...newState };
     });
   };
@@ -138,6 +149,7 @@ export default class App extends React.Component {
         }
       }
       // console.log(...newState);
+      this._saveToDos(newState.toDos);
       return { ...newState };
     })
   };
@@ -158,6 +170,7 @@ export default class App extends React.Component {
           }
         }
       }
+      this._saveToDos(newState.toDos);
       return { ...newState };
     })
   }
@@ -176,11 +189,18 @@ export default class App extends React.Component {
           }
         }
       };
-      console.log(newState);
+      // console.log(newState);
+      this._saveToDos(newState.toDos);
       return { ...newState };
     });
   };
 
+  //서버에 저장
+  _saveToDos = (newToDos) => {
+    //AsyncStorage메서드가 string으로만 저장하기 때문에 객체 => 스트링 변환
+    // console.log(JSON.stringify(newToDos));
+    const saveToDos = AsyncStorage.setItem("toDos", JSON.stringify(newToDos))
+  }
 
 }
 
