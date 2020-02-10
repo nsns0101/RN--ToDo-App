@@ -11,11 +11,11 @@
     ],
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ToDoIcon.png",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/ToDoSplash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#23657"
     },
     "updates": {
       "fallbackToCacheTimeout": 0

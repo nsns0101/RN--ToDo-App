@@ -79,7 +79,6 @@ export default class ToDo extends React.Component {
                             )
                         }
                     </TouchableOpacity>
-
                 </View>
                 {isEditing ? (
                     <View style={styles.actions}>
@@ -99,7 +98,12 @@ export default class ToDo extends React.Component {
                                 </View>
                             </TouchableOpacity>
                             {/* 삭제 버튼*/}{/* function안에 deleteToDo함수를 넣어야 함 */}
-                            <TouchableOpacity onPressOut={() => deleteToDo(id)}>
+                            <TouchableOpacity onPressOut={
+                                (event) => {
+                                    event.stopPropagation;
+                                    deleteToDo(id);
+                                }
+                            }>
                                 <View style={styles.actionContainer}>
                                     <Text style={styles.actionText}>❌</Text>
                                 </View>
@@ -112,7 +116,8 @@ export default class ToDo extends React.Component {
     }
 
     //라디오버튼에 대한 토글값
-    _toggleComplete = () => {
+    _toggleComplete = (event) => {
+        event.stopPropagation();
         // console.log(this.props);
         const { isCompleted, completeToDo, uncompleteToDo, id } = this.props;
         if (isCompleted) {
@@ -125,7 +130,8 @@ export default class ToDo extends React.Component {
         }
     };
     //편집 시작
-    _startEditing = () => {
+    _startEditing = (event) => {
+        event.stopPropagation();
         const { text } = this.props;
         this.setState({
             isEditing: true,
@@ -133,7 +139,8 @@ export default class ToDo extends React.Component {
         });
     };
     //편집 끝
-    _finishEditing = () => {
+    _finishEditing = (event) => {
+        event.stopPropagation();
         const { toDoValue } = this.state;
         const { id, updateToDo } = this.props;
         updateToDo(id, toDoValue);

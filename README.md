@@ -17,3 +17,6 @@
 # 프로젝트 실행
 - 1. AndroidStudio 에뮬레이터 실행
 - 2. npm start, expo start로 프로젝트 실행(package.json 참고)
+
+# npm install 목록
+- 1. npm install uuid --save    //

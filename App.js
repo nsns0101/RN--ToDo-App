@@ -27,6 +27,7 @@ export default class App extends React.Component {
     //앱 로딩이 안되어 있으면
     if (!loadedToDos) {
       // console.log("");
+      console.log("aa");
       return <AppLoading />;
     }
 
@@ -49,7 +50,7 @@ export default class App extends React.Component {
           {/* 스크롤 뷰 (ToDo파일에 style전달) */}
           <ScrollView contentContainerStyle={styles.toDos}>
             {/* toDos객체(ToDoList) 개수만큼 반복(key와 값들) */}
-            {Object.values(toDos).reverse().map(toDo => ( //revserse는 반대로 정렬
+            {Object.values(toDos).map(toDo => ( //revserse는 반대로 정렬
               <ToDo
                 key={toDo.id}
                 updateToDo={this._updateToDo}             //텍스트 편집시 적용되는 함수
@@ -74,6 +75,7 @@ export default class App extends React.Component {
   // 로딩상태를 전달
   _loadToDos = async () => {
     try {
+
       // console.log(AsyncStorage);
       const toDos = await AsyncStorage.getItem("toDos");
       // console.log(JSON.parse(toDos));
@@ -89,7 +91,7 @@ export default class App extends React.Component {
   //ToDoList 추가
   _addToDo = () => {
     const { newToDo } = this.state;   //현재 입력창에 적어진 글
-    //입력창에 무엇인가 써있다면
+    //입력창에 무엇인가 써있다면 추가하게
     if (newToDo !== "") {
       this.setState(prevState => {
         // console.log(prevState);      //현재 State의 값
@@ -151,7 +153,7 @@ export default class App extends React.Component {
       // console.log(...newState);
       this._saveToDos(newState.toDos);
       return { ...newState };
-    })
+    });
   };
 
   //라디오버튼 누른 후
@@ -172,8 +174,8 @@ export default class App extends React.Component {
       }
       this._saveToDos(newState.toDos);
       return { ...newState };
-    })
-  }
+    });
+  };
 
 
   //텍스트 편집
